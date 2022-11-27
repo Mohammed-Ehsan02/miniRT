@@ -6,7 +6,7 @@
 #    By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/11/17 14:01:09 by hsarhan           #+#    #+#              #
-#    Updated: 2022/11/27 16:29:10 by hsarhan          ###   ########.fr        #
+#    Updated: 2022/11/27 16:30:38 by hsarhan          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -55,7 +55,7 @@ $(LIBFT):
 	make -j10 -C libft
 
 $(NAME): $(LIBFT) $(OBJ)
-	make -s -j10 all -C mlx
+	make -s -j10 all -C mlx_linux
 	$(CC) $(CFLAGS) $(OBJ) $(LIBFT)  -Lmlx_linux -lmlx_Linux -L/usr/lib -Imlx_linux -lXext -lX11 -lm -lz -o $(NAME)
 
 leakcheck: $(LIBFT) $(OBJ)

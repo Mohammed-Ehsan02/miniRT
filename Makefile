@@ -6,7 +6,7 @@
 #    By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/11/17 14:01:09 by hsarhan           #+#    #+#              #
-#    Updated: 2022/11/26 17:09:35 by hsarhan          ###   ########.fr        #
+#    Updated: 2022/11/27 16:29:10 by hsarhan          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -36,11 +36,11 @@ LIBFT = libft/libft.a
 NAME = miniRT
 
 CC = gcc
-INC = -Iinclude -Ilibft -Imlx
+# INC = -Iinclude -Ilibft -Imlx
 
 OPTIMIZATION_FLAGS = -Ofast -march=native -flto -fno-signed-zeros -fno-trapping-math -funroll-loops
 
-CFLAGS = -Wall -Wextra  -Werror  -g3  $(INC) \
+CFLAGS = -Wall -Wextra  -Werror  -g3  $(INC) -Iinclude -Ilibft -I/usr/include -Imlx_linux \
 			$(OPTIMIZATION_FLAGS) \
 			# -fsanitize=address \
 
@@ -56,7 +56,7 @@ $(LIBFT):
 
 $(NAME): $(LIBFT) $(OBJ)
 	make -s -j10 all -C mlx
-	$(CC) $(CFLAGS) $(OBJ) $(LIBFT)  -Lmlx -lmlx -framework OpenGL -framework AppKit -o $(NAME)
+	$(CC) $(CFLAGS) $(OBJ) $(LIBFT)  -Lmlx_linux -lmlx_Linux -L/usr/lib -Imlx_linux -lXext -lX11 -lm -lz -o $(NAME)
 
 leakcheck: $(LIBFT) $(OBJ)
 	rm -f $(NAME)

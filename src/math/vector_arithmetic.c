@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 09:46:11 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/11/27 13:56:32 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/12/04 18:35:49 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,5 +61,8 @@ void	scale_vec(t_vector *res, const t_vector *v, double scale)
  */
 void	negate_vec(t_vector *res, const t_vector *v)
 {
-	scale_vec(res, v, -1);
+	res->x = -1 * v->x;
+	res->y = -1 * v->y;
+	res->z = -1 * v->z;
+	res->w = -1 * v->w;
 }

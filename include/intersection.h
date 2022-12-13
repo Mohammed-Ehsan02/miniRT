@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/21 12:19:12 by mkhan             #+#    #+#             */
-/*   Updated: 2022/11/27 15:45:03 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/12/12 15:21:09 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ struct s_ray
 	t_vector	origin;
 	t_vector	direction;
 };
-void	ray_for_pixel(t_ray *ray, const t_camera *cam, int x, int y);
+void		ray_for_pixel(t_ray *ray, const t_camera *cam, int x, int y);
 
 /**
  * @brief Struct containing information relevant for mlx and the window
@@ -44,10 +44,12 @@ struct	s_mlx
 {
 	void	*mlx;
 	void	*mlx_win;
-	void	*img;
+	void	*edit_img;
+	char	*edit_addr;
 	void	*display_img;
-	char	*addr;
 	char	*display_addr;
+	void	*render_img;
+	char	*render_addr;
 	int		bytes_per_pixel;
 	int		line_length;
 	int		endian;
@@ -62,12 +64,14 @@ struct	s_mlx
 typedef struct s_intersect		t_intersect;
 struct s_intersect
 {	
-	double	time;
-	t_shape	*shape;
-	t_vector point;
-	t_vector normal;
-	t_vector eye;
-	bool	inside;
+	double		time;
+	t_shape		*shape;
+	t_vector	point;
+	t_vector	normal;
+	t_vector	eye;
+	t_vector	over_point;
+	t_vector	reflect_vec;
+	bool		inside;
 };
 
 /**
@@ -82,15 +86,21 @@ struct s_intersections
 	int			count;
 };
 // draw_scene.c
-void		my_mlx_pixel_put(t_mlx *data, int x, int y, int color);
+void		my_mlx_pixel_put(t_scene *data, int x, int y, int color);
 void		draw_scene(t_scene *scene);
 
 // intersections.c
 void		ray_position(t_vector *pos, const t_ray *ray, double time);
-void	transform_ray(t_ray *transformed_ray, const t_ray *ray, const t_shape *shape);
+void		transform_ray(t_ray *transformed_ray, const t_ray *ray,
+				const t_shape *shape);
 bool		intersect(t_shape *shape, const t_ray *ray, t_intersections *xs);
 t_intersect	*hit(t_intersections *xs);
 t_vector	normal_at(const t_shape *shape, const t_vector *intersection_point);
 t_color		lighting(t_intersect *intersection, t_scene *scene, int light_idx);
+bool		is_shadowed(t_scene *scene, int light_idx,
+				t_vector *intersection_point);
+t_color	reflected_color(t_scene *scene, t_intersect *intersection, int remaining, int light_idx);
+void	prepare_computations(t_intersect *intersection, t_ray *ray);
+
 
 #endif

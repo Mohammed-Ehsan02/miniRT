@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/20 16:32:52 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/11/26 16:34:26 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/12/10 12:53:41 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,17 +103,19 @@ bool	parse_camera(t_scene *scene, char **splitted, char *line,
 
 	success = true;
 	if (split_count(splitted) != 4)
-		return (camera_parse_error(line, line_num, scene));
+		return (camera_parse_error(line, line_num, scene, false));
 	parse_coordinates(&scene->camera.position, splitted[1], &success);
 	scene->camera.position.w = 1;
 	if (success == false)
-		return (camera_parse_error(line, line_num, scene));
+		return (camera_parse_error(line, line_num, scene, true));
 	parse_orientation(&scene->camera.orientation, splitted[2], &success);
-	if (success == false)
-		return (camera_parse_error(line, line_num, scene));
+	if (success == false || vec_magnitude(&scene->camera.orientation) == 0 ||
+		(scene->camera.orientation.x == 0 && scene->camera.orientation.y == 1 &&
+		scene->camera.orientation.z == 0))
+		return (camera_parse_error(line, line_num, scene, false));
 	scene->camera.fov = ft_atol(splitted[3], &success);
-	if (success == false || scene->camera.fov < 0 || scene->camera.fov > 180)
-		return (camera_parse_error(line, line_num, scene));
+	if (is_num(splitted[3], false) == false || success == false || scene->camera.fov < 0 || scene->camera.fov > 180)
+		return (camera_parse_error(line, line_num, scene, false));
 	scene->count.camera_count++;
 	return (true);
 }

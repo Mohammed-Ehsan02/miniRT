@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/19 15:43:11 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/11/22 16:05:30 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/12/10 12:54:58 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,19 +105,29 @@ void	*ambient_parse_error(char *line, size_t line_num, t_scene *scene)
  * @param splitted Array to be freed
  * @param fd fd to be closed
  */
-void	*camera_parse_error(char *line, size_t line_num, t_scene *scene)
+void	*camera_parse_error(char *line, size_t line_num, t_scene *scene,
+	bool invalid_coords)
 {
 	bool	orientation;
 
-	orientation = check_orientation(&scene->camera.orientation, line_num, line,
+	orientation = false;
+	if (!invalid_coords)
+		orientation = check_orientation(&scene->camera.orientation, line_num, line,
 			"camera");
-	if (!orientation && (scene->camera.fov < 0 || scene->camera.fov > 180))
+	if (!invalid_coords && vec_magnitude(&scene->camera.orientation) == 1 && scene->camera.orientation.y == 1)
+	{
+		printf(YELLOW"Error with parsing camera orientation on line #%ld\n"
+			RED"->\t%s\n"RESET, line_num, line);
+		printf(YELLOW"Camera orientation cannot be the up vector (0, 1, 0)\n"
+			RESET);
+	}
+	else if (!invalid_coords && !orientation && (scene->camera.fov < 0 || scene->camera.fov > 180))
 	{
 		printf(YELLOW"Error with parsing camera fov on line #%ld\n"RED"->\t%s\n"
 			RESET, line_num, line);
 		printf(YELLOW"The fov value is out of range\n"RESET);
 	}
-	else if (!orientation)
+	else if (invalid_coords || !orientation)
 		printf(YELLOW"Error with parsing camera on line #%ld\n"RED"->\t%s"RESET
 			YELLOW"Correct syntax is \"C [origin] [orientation] [fov]\"\n"RESET,
 			line_num, line);

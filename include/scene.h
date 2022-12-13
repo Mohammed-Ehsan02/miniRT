@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 13:46:46 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/11/27 15:40:23 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/12/12 13:46:42 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # include "vector.h"
 # include "matrix.h"
+# include <pthread.h>
 
 /**
  * @brief Type of light
@@ -47,7 +48,8 @@ unsigned int	create_mlx_color(t_color *color);
 void			add_colors(t_color *res, const t_color *c1, const t_color *c2);
 void			sub_colors(t_color *res, const t_color *c1, const t_color *c2);
 void			mult_color(t_color *res, const t_color *color, double val);
-void			blend_colors(t_color *res, const t_color *c1, const t_color *c2);
+void			blend_colors(t_color *res, const t_color *c1,
+					const t_color *c2);
 
 /**
  * @brief A light source
@@ -95,9 +97,12 @@ struct s_camera
 	double		half_height;
 	t_mat4		transform;
 	t_mat4		inv_trans;
+	float		phi;
+	float		theta;
 };
-void	camera_init(t_camera *camera, t_scene *scene);
-void	view_transform(t_mat4 *res, const t_vector *from, const t_vector *up, const t_vector *forward);
+void			camera_init(t_camera *camera, t_scene *scene);
+void			view_transform(t_mat4 *res, const t_vector *from,
+					const t_vector *up, const t_vector *forward);
 
 /**
  * @brief Type of shape
@@ -141,7 +146,16 @@ struct s_shape
 	double			diffuse;
 	double			specular;
 	double			shininess;
+	double			reflectiveness;
+	int				rot_x;
+	int				rot_y;
+	int				rot_z;
+	int				scale_x;
+	int				scale_y;
+	int				scale_z;
+	bool			highlighted;
 };
+void			reflect(t_vector *res, t_vector *in_vector, t_vector *normal);
 
 /**
  * @brief Holds the number of elements in a scene
@@ -160,6 +174,26 @@ struct	s_el_count
 };
 
 typedef struct s_mlx		t_mlx;
+typedef struct s_keys		t_keys;
+struct s_keys
+{
+	bool	w;
+	bool	a;
+	bool	s;
+	bool	d;
+	bool	up;
+	bool	down;
+	bool	left;
+	bool	right;
+	bool	q;
+	bool	e;
+	bool	plus;
+	bool	minus;
+	bool	tab;
+	bool	c;
+};
+int				set_key_down(int key, t_scene *scene);
+int				set_key_up(int key, t_scene *scene);
 
 /**
  * @brief A description of a 3D scene
@@ -176,11 +210,35 @@ struct s_scene
 	t_light		*lights;
 	t_shape		*shapes;
 	t_el_count	count;
-	int			win_h;
-	int			win_w;
+	int			display_h;
+	int			display_w;
 	int			render_h;
 	int			render_w;
+	int			edit_h;
+	int			edit_w;
 	t_mlx		*mlx;
+	t_keys		keys_held;
+	// float		plane_angle;
+	int			shape_idx;
+	bool		camera_mode;
+	bool		edit_mode;
+	int			reflection_depth;
+};
+
+typedef struct s_worker		t_worker;
+
+struct s_worker
+{
+	int		worker_id;
+	int		y_start;
+	int		y_end;
+	int		y_scale_start;
+	int		y_scale_end;
+	int		max_workers;
+	int		height;
+	int		width;
+	char	*addr;
+	t_scene	*scene;
 };
 
 #endif

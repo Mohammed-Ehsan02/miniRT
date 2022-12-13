@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strtrim.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hsarhan <hassanAsarhan@outlook.com>        +#+  +:+       +#+        */
+/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/11 22:39:27 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/05/15 13:08:37 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/12/11 13:03:40 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,9 @@ char	*ft_strtrim(char const *s1, char const *set)
 
 	start = 0;
 	end = ft_strlen(s1);
-	while (ft_strchr(set, s1[start]) != NULL)
+	while (s1[start] != '\0' && ft_strchr(set, s1[start]) != NULL)
 		start++;
-	while (ft_strchr(set, s1[end]) != NULL)
+	while (end > 0 && ft_strchr(set, s1[end]) != NULL)
 		end--;
 	if (start > end)
 		trimmed = malloc(sizeof(char));

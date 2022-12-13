@@ -6,18 +6,19 @@
 #    By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/11/17 14:01:09 by hsarhan           #+#    #+#              #
-#    Updated: 2022/11/27 16:30:38 by hsarhan          ###   ########.fr        #
+#    Updated: 2022/12/12 18:00:08 by hsarhan          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 PARSING_SRC = parse_utils.c shape_errors.c scene_errors.c \
-				parse_scene.c parse_shapes.c parse_elements.c parse_attributes.c
+				parse_scene.c parse_shapes.c parse_elements.c parse_attributes.c \
+				parse_settings.c
 PARSING_SRC := $(addprefix parsing/, $(PARSING_SRC))
 
 MATH_SRC = vector_arithmetic.c vector_operations.c matrix_operations.c matrix_inverse.c matrix_inverse2.c matrix_transformations.c
 MATH_SRC := $(addprefix math/, $(MATH_SRC))
 
-INTERSECTION_SRC = intersections.c
+INTERSECTION_SRC = intersections.c reflections.c
 INTERSECTION_SRC := $(addprefix intersection/, $(INTERSECTION_SRC))
 
 LIGHTING_SRC = lighting.c camera.c
@@ -43,7 +44,7 @@ OPTIMIZATION_FLAGS = -O3 -march=native -flto -fno-signed-zeros -funroll-loops
 
 CFLAGS = -Wall -Wextra  -g3 -pthread $(INC) \
 			$(OPTIMIZATION_FLAGS) \
-			-fsanitize=address \
+			# -fsanitize=address \
 
 # cp mlx/libmlx.dylib .
 # $(CC) $(CFLAGS) $(OBJ) $(LIBFT)  -Lmlx -lmlx -framework OpenGL -framework AppKit -o $(NAME)
@@ -63,7 +64,7 @@ $(NAME): $(LIBFT) $(OBJ)
 
 leakcheck: $(LIBFT) $(OBJ)
 	rm -f $(NAME)
-	$(CC) $(CFLAGS) $(OBJ) $(LIBFT)  -Lleaksan -llsan -lc++ -o $(NAME)
+	$(CC) $(CFLAGS) $(OBJ) $(LIBFT) -Lmlx -lmlx -framework OpenGL -framework AppKit -Lleaksan -llsan -lc++ -o $(NAME)
 
 clean:
 	make -C mlx_linux clean

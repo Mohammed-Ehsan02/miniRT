@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/17 14:00:17 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/11/22 16:05:21 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/12/12 12:56:46 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,13 +50,13 @@ static bool	check_element_count(t_scene *scene)
  *  incremented if a line is skipped
  * @return True if a line is skipped
  */
-static bool	skip_line(char **line, int fd, size_t *line_count)
+bool	skip_line(char **line, int fd, size_t *line_count)
 {
 	if (ft_strlen(*line) == 0 || all_whitespace(*line) == true
 		|| ft_strncmp(*line, "//", 2) == 0 || ft_strncmp(*line, "#", 1) == 0)
 	{
 		free(*line);
-		*line = get_next_line(fd);
+		*line = ft_strtrim_free(get_next_line(fd), " \t\n");
 		*line_count += 1;
 		return (true);
 	}
@@ -70,7 +70,7 @@ static bool	skip_line(char **line, int fd, size_t *line_count)
  * @param line_num The current line number
  * @return True if the line was parsed successfully
  */
-static bool	parse_line(t_scene *scene, char *line, size_t line_num)
+static bool	parse_line(t_scene *scene, char *line, size_t line_num, int fd)
 {
 	bool	success;
 	char	**splitted;
@@ -85,6 +85,8 @@ static bool	parse_line(t_scene *scene, char *line, size_t line_num)
 		success = parse_light(scene, splitted, line, line_num);
 	else if (is_shape(splitted[0]))
 		success = parse_shape(scene, splitted, line_num, line);
+	else if (is_settings(line) == true)
+		success = parse_settings(scene, line, line_num, fd);
 	else
 		success = unknown_identifier(line, line_num, scene, splitted);
 	free(line);
@@ -109,13 +111,12 @@ t_scene	*parse_scene(int fd)
 	scene = ft_calloc(1, sizeof(t_scene));
 	if (scene == NULL)
 		return (NULL);
-	printf("ERR\n");
 	line = get_next_line(fd);
 	while (line != NULL)
 	{
 		if (skip_line(&line, fd, &line_count) == true)
 			continue ;
-		success = parse_line(scene, line, line_count);
+		success = parse_line(scene, line, line_count, fd);
 		if (success == false)
 			return (NULL);
 		line = get_next_line(fd);

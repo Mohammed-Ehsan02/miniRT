@@ -6,20 +6,16 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/22 19:35:57 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/11/27 13:54:38 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/12/12 19:26:39 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "miniRT.h"
+#include <unistd.h>
 
-/**
- * @brief Function to transform a shape when a key is pressed
- * @param key Key that was pressed
- * @param scene The scene struct
- */
-int	transform_shape(int key, t_scene *scene)
+int	set_key_down(int key, t_scene *scene)
 {
-	printf("%d\n", key);
+	// printf("%d\n", key);
 	// scene->shapes[scene->shape_idx % scene->count.shape_count].highlighted = false;
 	if (key == KEY_SPACE || key == 32)
 	{
@@ -105,7 +101,7 @@ int	transform_shape(int key, t_scene *scene)
 	return (0);
 }
 
-int	transform_room(int key, t_scene *scene)
+int	set_key_up(int key, t_scene *scene)
 {
 	// printf("%d\n", key);
 	if (key == KEY_C || key == L_KEY_C)
@@ -143,17 +139,120 @@ int	key_handler(t_scene *scene)
 {
 	if (scene->camera_mode == true && scene->edit_mode == true)
 	{
-		// scene->camera.position.x += 0.35;
-		scene->lights[0].position.x -= 0.8;
+		if (scene->keys_held.w == true)
+		{
+			scene->camera.position.x += 0.5 *sin(scene->camera.phi)*cos(scene->camera.theta);
+			scene->camera.position.z += 0.5 *sin(scene->camera.phi)*sin(scene->camera.theta);
+			scene->camera.position.y += 0.5 *cos(scene->camera.phi);
+		}
+		if (scene->keys_held.a == true)
+		{
+			scene->camera.position.x += 0.5 *sin(M_PI / 2)*cos(scene->camera.theta + M_PI / 2);
+			scene->camera.position.z += 0.5 *sin(M_PI / 2)*sin(scene->camera.theta + M_PI / 2);
+			scene->camera.position.y += 0.5 *cos(M_PI / 2);
+		}
+		if (scene->keys_held.s == true)
+		{
+			scene->camera.position.x -= 0.5 *sin(scene->camera.phi)*cos(scene->camera.theta);
+			scene->camera.position.z -= 0.5 *sin(scene->camera.phi)*sin(scene->camera.theta);
+			scene->camera.position.y -= 0.5 *cos(scene->camera.phi);
+		}
+		if (scene->keys_held.d == true)
+		{
+			scene->camera.position.x += 0.5 *sin(M_PI / 2)*cos(scene->camera.theta - M_PI / 2);
+			scene->camera.position.z += 0.5 *sin(M_PI / 2)*sin(scene->camera.theta - M_PI / 2);
+			scene->camera.position.y += 0.5 *cos(M_PI / 2);
+		}
+		if (scene->keys_held.up == true)
+		{
+			if (scene->camera.phi > 0.5)
+				scene->camera.phi -= 0.05;
+			scene->camera.orientation.x = sin(scene->camera.phi) * cos(scene->camera.theta);
+			scene->camera.orientation.z = sin(scene->camera.phi) * sin(scene->camera.theta);
+			scene->camera.orientation.y = cos(scene->camera.phi);
+		}
+		if (scene->keys_held.down == true)
+		{
+			if (scene->camera.phi < M_PI - 0.5)
+				scene->camera.phi += 0.05;
+			scene->camera.orientation.x = sin(scene->camera.phi) * cos(scene->camera.theta);
+			scene->camera.orientation.z = sin(scene->camera.phi) * sin(scene->camera.theta);
+			scene->camera.orientation.y = cos(scene->camera.phi);
+		}
+		if (scene->keys_held.left == true)
+		{
+			scene->camera.theta += 0.10;
+			scene->camera.orientation.x = sin(scene->camera.phi) * cos(scene->camera.theta);
+			scene->camera.orientation.z = sin(scene->camera.phi) * sin(scene->camera.theta);
+			scene->camera.orientation.y = cos(scene->camera.phi);
+		}
+		if (scene->keys_held.right == true)
+		{
+			scene->camera.theta -= 0.10;
+			scene->camera.orientation.x = sin(scene->camera.phi) * cos(scene->camera.theta);
+			scene->camera.orientation.z = sin(scene->camera.phi) * sin(scene->camera.theta);
+			scene->camera.orientation.y = cos(scene->camera.phi);
+		}
+		if (scene->keys_held.q == true)
+			scene->camera.position.y += 0.35;
+		if (scene->keys_held.e == true)
+			scene->camera.position.y -= 0.35;
 	}
-	if (key == KEY_E)
+	else if (scene->edit_mode == true)
 	{
-		// scene->camera.position.x -= 0.35;
-		scene->lights[0].position.x += 0.8;
+		if (scene->keys_held.w == true)
+		{
+			scene->shapes[scene->shape_idx % scene->count.shape_count].origin.x += 0.2 *sin(scene->camera.phi)*cos(scene->camera.theta);
+			scene->shapes[scene->shape_idx % scene->count.shape_count].origin.z += 0.2 *sin(scene->camera.phi)*sin(scene->camera.theta);
+		}
+		if (scene->keys_held.a == true)
+		{
+			scene->shapes[scene->shape_idx % scene->count.shape_count].origin.x += 0.2 *sin(M_PI / 2)*cos(scene->camera.theta + M_PI / 2);
+			scene->shapes[scene->shape_idx % scene->count.shape_count].origin.z += 0.2 *sin(M_PI / 2)*sin(scene->camera.theta + M_PI / 2);
+		}
+		if (scene->keys_held.s == true)
+		{
+			scene->shapes[scene->shape_idx % scene->count.shape_count].origin.x -= 0.2 *sin(scene->camera.phi)*cos(scene->camera.theta);
+			scene->shapes[scene->shape_idx % scene->count.shape_count].origin.z -= 0.2 *sin(scene->camera.phi)*sin(scene->camera.theta);
+		}
+		if (scene->keys_held.d == true)
+		{
+			scene->shapes[scene->shape_idx % scene->count.shape_count].origin.x -= 0.2 *sin(M_PI / 2)*cos(scene->camera.theta + M_PI / 2);
+			scene->shapes[scene->shape_idx % scene->count.shape_count].origin.z -= 0.2 *sin(M_PI / 2)*sin(scene->camera.theta + M_PI / 2);
+		}
+		if (scene->keys_held.plus == true)
+			scene->shapes[scene->shape_idx % scene->count.shape_count].radius += 0.04;
+		if (scene->keys_held.minus == true)
+		{
+			if (scene->shapes[scene->shape_idx % scene->count.shape_count].radius > 0.3)
+				scene->shapes[scene->shape_idx % scene->count.shape_count].radius -= 0.04;
+		}
+		if (scene->keys_held.up == true)
+			scene->lights[0].position.y += 0.3;
+		if (scene->keys_held.down == true)
+			scene->lights[0].position.y -= 0.3;
+		if (scene->keys_held.left == true)
+			scene->lights[0].position.x -= 0.3;
+		if (scene->keys_held.right == true)
+			scene->lights[0].position.x += 0.3;
+		if (scene->keys_held.q == true)
+			scene->shapes[scene->shape_idx % scene->count.shape_count].origin.y += 0.1;
+		if (scene->keys_held.e == true)
+			scene->shapes[scene->shape_idx % scene->count.shape_count].origin.y -= 0.1;
 	}
-	if (key == KEY_A || key == KEY_S || key == KEY_D || key == KEY_PLUS
-		|| key == KEY_MINUS || key == KEY_W || key == KEY_UP || key == KEY_DOWN
-		|| key == KEY_LEFT || key == KEY_RIGHT || key == KEY_E || key == KEY_Q)
+	if (scene->edit_mode == true && (scene->keys_held.w
+		|| scene->keys_held.a
+		|| scene->keys_held.s
+		|| scene->keys_held.d
+		|| scene->keys_held.up
+		|| scene->keys_held.down
+		|| scene->keys_held.left
+		|| scene->keys_held.right
+		|| scene->keys_held.q
+		|| scene->keys_held.e
+		|| scene->keys_held.plus
+		|| scene->keys_held.minus)
+		)
 	{
 		calculate_transforms(scene);
 		draw_scene(scene);

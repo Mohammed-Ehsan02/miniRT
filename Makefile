@@ -62,9 +62,9 @@ $(NAME): $(LIBFT) $(OBJ)
 	make -s  all -C mlx_linux
 	$(CC) $(CFLAGS) $(OBJ) $(LIBFT)  -Lmlx_linux -lmlx -L/usr/lib -Imlx_linux -lXext -lX11 -lm -lz -o $(NAME)
 
-leakcheck: $(LIBFT) $(OBJ)
-	rm -f $(NAME)
-	$(CC) $(CFLAGS) $(OBJ) $(LIBFT) -Lmlx -lmlx -framework OpenGL -framework AppKit -Lleaksan -llsan -lc++ -o $(NAME)
+# leakcheck: $(LIBFT) $(OBJ)
+# 	rm -f $(NAME)
+# 	$(CC) $(CFLAGS) $(OBJ) $(LIBFT) -Lmlx -lmlx -framework OpenGL -framework AppKit -Lleaksan -llsan -lc++ -o $(NAME)
 
 clean:
 	make -C mlx_linux clean

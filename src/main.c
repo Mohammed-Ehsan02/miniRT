@@ -59,15 +59,14 @@ int	main(int argc, char **argv)
 	close(fd);
 	if (scene == NULL)
 		return (EXIT_FAILURE);
-	scene->render_w = 854 * 0.6;
-	scene->render_h = 480 * 0.6;
-	scene->win_w = 2560 * 0.8;
-	scene->win_h = 1440 * 0.8;
-	camera_init(&scene->camera, scene);
-
-	calculate_transforms(scene);
-
-	// print_scene(scene);
+	scene->render_w = 1920 * 1.2;
+	scene->render_h = 1080 * 1.2;
+	scene->edit_w = 1920 * 0.2;
+	scene->edit_h = 1080 * 0.2;
+	scene->display_w = 2560 * 0.4;
+	scene->display_h = 1440 * 0.4;
+	scene->reflection_depth = REFLECTION_DEPTH;
+	t_mlx		mlx;
 	mlx.mlx = mlx_init();
 	mlx.mlx_win = mlx_new_window(mlx.mlx, scene->win_w, scene->win_h, "Hello world!");
 	mlx.img = mlx_new_image(mlx.mlx, scene->render_w, scene->render_h);
@@ -78,9 +77,13 @@ int	main(int argc, char **argv)
 								&mlx.endian);
 	mlx.bytes_per_pixel /= 8;
 	scene->mlx = &mlx;
-	// mlx_hook(mlx.mlx_win, 2, (1L << 0), transform_shape, scene);
-	mlx_hook(mlx.mlx_win, 2, (1L << 0), transform_room, scene);
-
+	mlx_hook(mlx.mlx_win, 2, (1L << 0), set_key_down, scene);
+	mlx_hook(mlx.mlx_win, 3, (1L << 1), set_key_up, scene);
+	mlx_loop_hook(mlx.mlx, key_handler, scene);
+	camera_init(&scene->camera, scene);
+	scene->camera.theta = atan(scene->camera.orientation.z / scene->camera.orientation.x);
+	scene->camera.phi = acos(scene->camera.orientation.y);
+	calculate_transforms(scene);
 	draw_scene(scene);
 
 	// ! Put this somewhere

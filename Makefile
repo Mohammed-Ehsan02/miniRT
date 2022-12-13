@@ -36,14 +36,17 @@ LIBFT = libft/libft.a
 NAME = miniRT
 
 CC = gcc
-# INC = -Iinclude -Ilibft -Imlx
+INC = -Iinclude -Ilibft -Imlx -I/usr/include -Imlx_linux
+# INC = -Iinclude -Ilibft -Imlx 
 
-OPTIMIZATION_FLAGS = -Ofast -march=native -flto -fno-signed-zeros -fno-trapping-math -funroll-loops
+OPTIMIZATION_FLAGS = -O3 -march=native -flto -fno-signed-zeros -funroll-loops
 
-CFLAGS = -Wall -Wextra  -Werror  -g3  $(INC) -Iinclude -Ilibft -I/usr/include -Imlx_linux \
+CFLAGS = -Wall -Wextra  -g3 -pthread $(INC) \
 			$(OPTIMIZATION_FLAGS) \
-			# -fsanitize=address \
+			-fsanitize=address \
 
+# cp mlx/libmlx.dylib .
+# $(CC) $(CFLAGS) $(OBJ) $(LIBFT)  -Lmlx -lmlx -framework OpenGL -framework AppKit -o $(NAME)
 
 all: $(NAME)
 
@@ -55,15 +58,15 @@ $(LIBFT):
 	make -j10 -C libft
 
 $(NAME): $(LIBFT) $(OBJ)
-	make -s -j10 all -C mlx_linux
-	$(CC) $(CFLAGS) $(OBJ) $(LIBFT)  -Lmlx_linux -lmlx_Linux -L/usr/lib -Imlx_linux -lXext -lX11 -lm -lz -o $(NAME)
+	make -s  all -C mlx_linux
+	$(CC) $(CFLAGS) $(OBJ) $(LIBFT)  -Lmlx_linux -lmlx -L/usr/lib -Imlx_linux -lXext -lX11 -lm -lz -o $(NAME)
 
 leakcheck: $(LIBFT) $(OBJ)
 	rm -f $(NAME)
 	$(CC) $(CFLAGS) $(OBJ) $(LIBFT)  -Lleaksan -llsan -lc++ -o $(NAME)
 
 clean:
-	make -C mlx clean
+	make -C mlx_linux clean
 	make -C libft clean
 	rm -rf $(OBJ_DIR)
 

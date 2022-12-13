@@ -29,8 +29,9 @@ CC = gcc
 
 OPTIMIZATION_FLAGS = -Ofast -march=native -flto -fno-signed-zeros -fno-trapping-math -funroll-loops
 
-CFLAGS = -Werror -Wall -Wextra -g3 $(OPTIMIZATION_FLAGS) \
-		# -fsanitize=address
+CFLAGS = -Wall -Wextra -g3 \
+		$(OPTIMIZATION_FLAGS) \
+		# -fsanitize=address \
 
 all: $(NAME) bonus
 

@@ -109,6 +109,7 @@ t_scene	*parse_scene(int fd)
 	scene = ft_calloc(1, sizeof(t_scene));
 	if (scene == NULL)
 		return (NULL);
+	printf("ERR\n");
 	line = get_next_line(fd);
 	while (line != NULL)
 	{
